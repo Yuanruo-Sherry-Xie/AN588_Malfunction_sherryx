@@ -1,0 +1,112 @@
+---
+title: "sherryx_OriginalHomeworkCode_04"
+author: "Sherry Xie"
+date: "2025-03-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sided", conf.level = 0.95) {
+  
+  # Rule of thumb check
+  if (n1 * p1 < 5 || n1 * (1 - p1) < 5) {
+    warning("Warning: Sample 1 may violate the normal approximation condition (np > 5 and n(1-p) > 5).")
+  }
+  
+  if (!is.null(p2) && !is.null(n2)) {
+    if (n2 * p2 < 5 || n2 * (1 - p2) < 5) {
+      warning("Warning: Sample 2 may violate the normal approximation condition (np > 5 and n(1-p) > 5).")
+    }
+    
+    # Two-sample test
+    p_star <- (p1 * n1 + p2 * n2) / (n1 + n2)  # pooled proportion
+    z <- (p1 - p2) / sqrt(p_star * (1 - p_star) * (1/n1 + 1/n2))
+    ci <- c((p1 - p2) - qnorm(1 - (1 - conf.level) / 2) * sqrt(p_star * (1 - p_star) * (1/n1 + 1/n2)),
+            (p1 - p2) + qnorm(1 - (1 - conf.level) / 2) * sqrt(p_star * (1 - p_star) * (1/n1 + 1/n2)))
+    
+  } else {
+    # One-sample test
+    z <- (p1 - p0) / sqrt(p0 * (1 - p0) / n1)
+    ci <- c(p1 - qnorm(1 - (1 - conf.level) / 2) * sqrt(p1 * (1 - p1) / n1),
+            p1 + qnorm(1 - (1 - conf.level) / 2) * sqrt(p1 * (1 - p1) / n1))
+  }
+  
+  # Calculate p-value
+  if (alternative == "less") {
+    p_value <- pnorm(z)
+  } else if (alternative == "greater") {
+    p_value <- 1 - pnorm(z)
+  } else {
+    p_value <- 2 * (1 - pnorm(abs(z)))
+  }
+  
+  # Return output
+  return(list(
+    Z = z,
+    P = p_value,
+    CI = ci
+  ))
+}
+
+# Example usage
+Z.prop.test(p1 = 0.6, n1 = 30, p0 = 0.8)
+Z.prop.test(p1 = 0.6, n1 = 30, p2 = 0.7, n2 = 35, p0 = 0.5)
+
+```
+
+```{r}
+library(ggplot2)
+
+# Load data
+url <- "https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall21/kamilar_cooper.csv"
+data <- read.csv(url)
+
+# Regression Model: Longevity ~ Brain Size
+lm1 <- lm(MaxLongevity_m ~ Brain_Size_Species_Mean, data = data)
+lm2 <- lm(log(MaxLongevity_m) ~ log(Brain_Size_Species_Mean), data = data)
+
+# Scatterplot for Model 1
+plot1 <- ggplot(data, aes(x = Brain_Size_Species_Mean, y = MaxLongevity_m)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "blue") +
+  geom_text(x = 1500, y = 400, label = paste("y =", round(coef(lm1)[1], 2), "+", round(coef(lm1)[2], 4), "* x")) +
+  labs(title = "Longevity vs Brain Size", x = "Brain Size (g)", y = "Longevity (months)")
+
+# Scatterplot for Model 2 (log-log)
+plot2 <- ggplot(data, aes(x = log(Brain_Size_Species_Mean), y = log(MaxLongevity_m))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "red") +
+  geom_text(x = 6, y = 6, label = paste("y =", round(coef(lm2)[1], 2), "+", round(coef(lm2)[2], 4), "* log(x)")) +
+  labs(title = "Log(Longevity) vs Log(Brain Size)", x = "log(Brain Size)", y = "log(Longevity)")
+
+# Display plots
+print(plot1)
+print(plot2)
+
+# CI and PI for a brain size of 800 gm
+brain_size_800 <- data.frame(Brain_Size_Species_Mean = 800)
+pred1 <- predict(lm1, newdata = brain_size_800, interval = "prediction", level = 0.90)
+
+brain_size_log_800 <- data.frame(Brain_Size_Species_Mean = log(800))
+pred2 <- predict(lm2, newdata = brain_size_log_800, interval = "prediction", level = 0.90)
+
+cat("Prediction for longevity at 800 gm brain size (Model 1):", pred1, "\n")
+cat("Prediction for longevity at log(800) gm brain size (Model 2):", pred2, "\n")
+
+# Interpretation:
+# Model 2 (log-log) generally provides better fit in cases with exponential-like growth or large variance.
+# The PI bands will reveal if 800g brain size is within the observed range; if it's extrapolating beyond the data, predictions are less trustworthy.
+
+```
+
+### **Summary and Interpretation**
+
+✅ The `Z.prop.test()` function correctly handles both one- and two-sample Z-tests for proportions. It includes appropriate warnings for violations of the normal approximation rule.\
+
+✅ The regression models illustrate both the standard and log-log relationships between longevity and brain size. The log-log model often fits better when dealing with exponential trends.\
+
+✅ The prediction intervals provide valuable insight into the reliability of estimates for species with an 800g brain size.
