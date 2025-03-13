@@ -128,14 +128,6 @@ Z.prop.test.function(p1 = 0.1, n1 = 10, p0 = 0.8)
 
 ### Fit the regression model and, using {ggplot2}, produce a scatterplot with the fitted line superimposed upon the data. Append the the fitted model equation to your plot (HINT: use the function `geom_text()`).
 
-### Identify and interpret the point estimate of the slope (𝛽1β1), as well as the outcome of the test associated with the hypotheses H0: 𝛽1β1 = 0; HA: 𝛽1β1 ≠ 0. Also, find a 90 percent CI for the slope (𝛽1β1) parameter.
-
-### Using your model, add lines for the 90 percent confidence and prediction interval bands on the plot and add a legend to differentiate between the lines.
-
-### Produce a point estimate and associated 90 percent PI for the longevity of a species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
-
-### Looking at your two models, which do you think is better? Why?
-
 [The `lm()` Function copied and used from module 12](https://fuzzyatelin.github.io/bioanth-stats/module-12/module-12.html)
 
 ```{r}
@@ -175,7 +167,6 @@ print(plot_lm)
 
 ```{r}
 # Scatterplot for Regression Model: log(longevity)~log(brain size)
-
 plot_lm_log <- ggplot(kamilar_cooper, aes(x = log(Brain_Size_Species_Mean), y = log(MaxLongevity_m))) +
   geom_point() +
   geom_smooth(method = "lm", se = TRUE, color = "red") +
@@ -186,17 +177,58 @@ plot_lm_log <- ggplot(kamilar_cooper, aes(x = log(Brain_Size_Species_Mean), y = 
 print(plot_lm_log)
 ```
 
+### Identify and interpret the point estimate of the slope (𝛽1β1), as well as the outcome of the test associated with the hypotheses H0: 𝛽1β1 = 0; HA: 𝛽1β1 ≠ 0. Also, find a 90 percent CI for the slope (𝛽1β1) parameter.
+
+```{r}
+#Identify the slope, hypothesis test, and CI using the results of lm()
+slope_lm <- coef(summary(lm))["Brain_Size_Species_Mean", "Estimate"]
+
+#90 percent CI 
+ci_lm <- confint(lm, level = 0.90)["Brain_Size_Species_Mean", ]
+
+slope_lm
+ci_lm
+```
+
+```{r}
+#Identify the slope, hypothesis test, and CI using the results of lm_log
+slope_lm_log <- coef(summary(lm_log))["log(Brain_Size_Species_Mean)", "Estimate"]
+
+#90 percent CI 
+ci_lm_log <- confint(lm_log, level = 0.90)["log(Brain_Size_Species_Mean)", ]
+
+slope_lm_log
+ci_lm_log
+```
+
+### Using your model, add lines for the 90 percent confidence and prediction interval bands on the plot and add a legend to differentiate between the lines.
+
+```{r}
+# Step 3: Plot with CI and PI for Model 1
+new_data <- data.frame(Brain_Size_Species_Mean = seq(min(d$Brain_Size_Species_Mean), max(d$Brain_Size_Species_Mean), length.ou = 100))
+```
+
+### Produce a point estimate and associated 90 percent PI for the longevity of a species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
+
+The `predict()` function allows us to generate predicted (i.e., ![](data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTJwdCIgaGVpZ2h0PSIyM3B0IiB2aWV3Qm94PSIwIDAgMTIgMjMiIHZlcnNpb249IjEuMSI+PCEtLWxhdGV4aXQ6QUFBRStuamFiVk5kYkZSRkZENHpVMHJwVW5yYjhsTmFvQmU3VmZ3QnRsWGNZZ1hiVWhZVmQwRjJ1OTEydTlUWgp1N083bDk2OWQzUHZYR1M3YVRJUjVRVmpEQ0dFb0toZFhpd3FDQnBqR24xUzR3OHgwWmI0UUdKTS9Jbnh3Y1NZCitHYWlzejhpR21aeWM4K2NtWFBtTzkvNUpwazNkSWY3Zk5jUkpuWEw2cDgrRnZNZVpiYWpXMmJNYXlXUE1JMDcKNDE1cWExbGR1aU5lYnVWYkFaMTQ3Ykt5ZVhuRDVqdTZ2VDEzM3JYbDdudnU3ZTNmdVd0bzM2T2hBMk94eVNrdApsVFVzaDQ5NlRkY3dsbFkwZWxhdVZjZEM0VzNUck9CTXlIOHRiOVNyR2RSeDVwdFdOU3N0clcycjF3Z3NpS2dUCnkwUzlXQzRheEFyUk9MK3VmWDFINTRhTm03cUVSNndVcTBTemFCRWRvbE5zRkp1RUdrdFNoeG02eVVZMXk3RHMKU001S3NWR3VjNFBGOGphanVhVEJFam1hTWZXMHJsRXVTNHFrS0dkVFNuT1NhdE1aMjNMTjFKNXk0SVJqdWJiRwpJdXdZNzRiYVdMcHZxMmZiZHQ5b0tIeG8zL0JrS0Z3NUdNNVRqUVY4cXB5Z0lORzAySGYvQXpzbXFtV1lOTWRpClZaTTVZN1dBMG9QK2Y4eFlLSHlnVXJkU3QraDVhT0RoY1VtRXcyM2R6QWpsb0V5MCt4RUpMQlFPdXB4SzNPSEsKem9YZGczNFpWMTBzRFh2MmpPd04zRnhMVUVOY1drbVhNMGUwaXZXaWJVcFpuRXhabXB0akpxOGdpZmY2OGp4UgpwRGJYTllQTk5rNjZEcE0xVE5NTWkwdXpqTmxKRkN2c3phbzkwcE5TMDVZdFA1T3JGZSt0RVVXYWM1eENMaWxQCjVpalBPdi9mS3p0dnR4ZDNlYm8vVWRUTnZFUnFhdFdMMHE2aGNrdmxoVHhUVTdvdGVURUswcUNhclV1c3FwYWwKTnRXNFZHSmpXVUNQN1EvT1BTNVd6ejBoMW9qMmFDZ2NrQUN2SDN6eWtDY2NHWTNLZFZpZllaS1lkTUNnR1VldQpRN0t3N3NFdDFWWXFpbGdyMWtXRGxrazFTekk5UGxITFVJcjdhNWIwSmc1TFFrZDByYXdUYWhkS0NiOTBQa1duCmxOWmJlRTVWcVM4bC9iZjFkdy8yVjY5Y1pKNTBwaXg1cmtzZ1F4OWVQZHMvY0x3b05zaVUraEY1NTRqVVlXbmEKWDdQS1dzdHQ5d1Y2VlRsQk5KVTduZDhiRUYzbG5vNU5aaWt2Rm1abHFIdDBTbW03S1pGL3NWNXdFLzZLZVBhegpBa3NOMVI3cjE0V1ppRzFaWENCb2dCYm9nRzdZQ24zZ2h6aFF5RUllaXZBTVBBOHZ3SXR3Q2s3REdUZ0w1K0JsCmVBVmVoNHZ3Smx5Q3QrRXF2QXZ2d2Z1d0FCL0FKM0FOdm9KdjREdjRGWDVIZGFnWnRhTXUxSVA2MEU0MGdIYWgKWVJSRVVYUVlVYVFqRzNGVVFNZlJjK2dFT29uT296bDBFVjFCQytoVDlEbTZocjdFSlR5UDM4QnY0Y3Y0Q240SApMK0NQOEJkNENkL0FQK0NmOE0vNEYvd2IvZ1AvaWY4aTljUkQya2tuVWNrTzBrK0NKRXJpUkNNR01ZbERac2dzCmVaYWNKS2ZJYWZJU09VOWVKWE5rbmx3aUg1UFB5QTN5TGZtKzJnbU1hZys2Q1A4WjVNZS9BUjRlbW8wPQotLT4KPGRlZnM+CjxnPgo8c3ltYm9sIG92ZXJmbG93PSJ2aXNpYmxlIiBpZD0iZ2x5cGgwLTAiPgo8cGF0aCBzdHlsZT0ic3Ryb2tlOm5vbmU7IiBkPSIiLz4KPC9zeW1ib2w+CjxzeW1ib2wgb3ZlcmZsb3c9InZpc2libGUiIGlkPSJnbHlwaDAtMSI+CjxwYXRoIHN0eWxlPSJzdHJva2U6bm9uZTsiIGQ9Ik0gNS45Njg3NSAtMTYuNTkzNzUgTCAyLjc2NTYyNSAtMTMuMzQzNzUgTCAzLjIwMzEyNSAtMTIuOTA2MjUgTCA1Ljk2ODc1IC0xNS4zNDM3NSBMIDguNzE4NzUgLTEyLjkwNjI1IEwgOS4xNTYyNSAtMTMuMzQzNzUgWiBNIDUuOTY4NzUgLTE2LjU5Mzc1ICIvPgo8L3N5bWJvbD4KPHN5bWJvbCBvdmVyZmxvdz0idmlzaWJsZSIgaWQ9ImdseXBoMS0wIj4KPHBhdGggc3R5bGU9InN0cm9rZTpub25lOyIgZD0iIi8+Cjwvc3ltYm9sPgo8c3ltYm9sIG92ZXJmbG93PSJ2aXNpYmxlIiBpZD0iZ2x5cGgxLTEiPgo8cGF0aCBzdHlsZT0ic3Ryb2tlOm5vbmU7IiBkPSJNIDExLjYyNSAtOS4xMDkzNzUgQyAxMS43MTg3NSAtOS40Mzc1IDExLjcxODc1IC05LjQ4NDM3NSAxMS43MTg3NSAtOS42NTYyNSBDIDExLjcxODc1IC0xMC4wOTM3NSAxMS4zNzUgLTEwLjI5Njg3NSAxMS4wMTU2MjUgLTEwLjI5Njg3NSBDIDEwLjc4MTI1IC0xMC4yOTY4NzUgMTAuNDA2MjUgLTEwLjE1NjI1IDEwLjE4NzUgLTkuNzk2ODc1IEMgMTAuMTQwNjI1IC05LjY4NzUgOS45Mzc1IC04LjkzNzUgOS44NDM3NSAtOC41MTU2MjUgQyA5LjY4NzUgLTcuODkwNjI1IDkuNTE1NjI1IC03LjI1IDkuMzc1IC02LjU5Mzc1IEwgOC4yOTY4NzUgLTIuMjk2ODc1IEMgOC4yMDMxMjUgLTEuOTM3NSA3LjE3MTg3NSAtMC4yNjU2MjUgNS41OTM3NSAtMC4yNjU2MjUgQyA0LjM3NSAtMC4yNjU2MjUgNC4xMDkzNzUgLTEuMzEyNSA0LjEwOTM3NSAtMi4yMDMxMjUgQyA0LjEwOTM3NSAtMy4yOTY4NzUgNC41MTU2MjUgLTQuNzgxMjUgNS4zMjgxMjUgLTYuODkwNjI1IEMgNS43MTg3NSAtNy44NTkzNzUgNS44MTI1IC04LjEyNSA1LjgxMjUgLTguNjA5Mzc1IEMgNS44MTI1IC05LjY4NzUgNS4wNDY4NzUgLTEwLjU2MjUgMy44NDM3NSAtMTAuNTYyNSBDIDEuNTc4MTI1IC0xMC41NjI1IDAuNjg3NSAtNy4wOTM3NSAwLjY4NzUgLTYuODkwNjI1IEMgMC42ODc1IC02LjY0MDYyNSAwLjkzNzUgLTYuNjQwNjI1IDAuOTg0Mzc1IC02LjY0MDYyNSBDIDEuMjE4NzUgLTYuNjQwNjI1IDEuMjUgLTYuNjg3NSAxLjM1OTM3NSAtNy4wNzgxMjUgQyAyLjAxNTYyNSAtOS4zMjgxMjUgMi45Njg3NSAtMTAuMDQ2ODc1IDMuNzgxMjUgLTEwLjA0Njg3NSBDIDMuOTY4NzUgLTEwLjA0Njg3NSA0LjM3NSAtMTAuMDQ2ODc1IDQuMzc1IC05LjI4MTI1IEMgNC4zNzUgLTguNjcxODc1IDQuMTQwNjI1IC04LjA2MjUgMy45Njg3NSAtNy42MDkzNzUgQyAzLjAxNTYyNSAtNS4wNjI1IDIuNTc4MTI1IC0zLjcwMzEyNSAyLjU3ODEyNSAtMi41NzgxMjUgQyAyLjU3ODEyNSAtMC40NTMxMjUgNC4wOTM3NSAwLjI2NTYyNSA1LjUgMC4yNjU2MjUgQyA2LjQzNzUgMC4yNjU2MjUgNy4yNSAtMC4xNDA2MjUgNy45MDYyNSAtMC44MTI1IEMgNy42MDkzNzUgMC40Mzc1IDcuMzEyNSAxLjYwOTM3NSA2LjM1OTM3NSAyLjg3NSBDIDUuNzM0Mzc1IDMuNjg3NSA0LjgyODEyNSA0LjM3NSAzLjczNDM3NSA0LjM3NSBDIDMuMzkwNjI1IDQuMzc1IDIuMzEyNSA0LjI5Njg3NSAxLjkwNjI1IDMuMzc1IEMgMi4yOTY4NzUgMy4zNzUgMi42MDkzNzUgMy4zNzUgMi45Mzc1IDMuMDc4MTI1IEMgMy4xNzE4NzUgMi44NzUgMy40MjE4NzUgMi41NjI1IDMuNDIxODc1IDIuMTA5Mzc1IEMgMy40MjE4NzUgMS4zNTkzNzUgMi43NjU2MjUgMS4yNjU2MjUgMi41MzEyNSAxLjI2NTYyNSBDIDEuOTg0Mzc1IDEuMjY1NjI1IDEuMTg3NSAxLjY1NjI1IDEuMTg3NSAyLjgyODEyNSBDIDEuMTg3NSA0LjAxNTYyNSAyLjI1IDQuOTA2MjUgMy43MzQzNzUgNC45MDYyNSBDIDYuMTg3NSA0LjkwNjI1IDguNjU2MjUgMi43MTg3NSA5LjMyODEyNSAwLjAzMTI1IFogTSAxMS42MjUgLTkuMTA5Mzc1ICIvPgo8L3N5bWJvbD4KPC9nPgo8L2RlZnM+CjxnIGlkPSJzdXJmYWNlMSI+CjxnIHN0eWxlPSJmaWxsOnJnYigwJSwwJSwwJSk7ZmlsbC1vcGFjaXR5OjE7Ij4KICA8dXNlIHhsaW5rOmhyZWY9IiNnbHlwaDAtMSIgeD0iMS41OTUyIiB5PSIxNy40MzE4Ii8+CjwvZz4KPGcgc3R5bGU9ImZpbGw6cmdiKDAlLDAlLDAlKTtmaWxsLW9wYWNpdHk6MTsiPgogIDx1c2UgeGxpbms6aHJlZj0iI2dseXBoMS0xIiB4PSItMC4wNDY0IiB5PSIxNy40MzE4Ii8+CjwvZz4KPC9nPgo8L3N2Zz4K)) values for a vector of values of x. Note the structure of the 2nd argument in the function… it includes the x variable name, and we pass it a vector of values. Here, I pass it a vector of actual x values. [MODULE 12](https://fuzzyatelin.github.io/bioanth-stats/module-12/module-12.html#Interpreting_Regression_Coefficients_and_Prediction)
+
 ```{r}
 # CI and PI for a brain size of 800 gm
-brain_size_800 <- data.frame(Brain_Size_Species_Mean = 800)
-pred1 <- predict(lm1, newdata = brain_size_800, interval = "prediction", level = 0.90)
+#("Prediction for longevity at 800 gm brain size (Model 1)
+pred1 <- predict(lm1, newdata = data.frame(Brain_Size_Species_Mean = 800), interval = "prediction", level = 0.90)
 
-brain_size_log_800 <- data.frame(Brain_Size_Species_Mean = log(800))
-pred2 <- predict(lm2, newdata = brain_size_log_800, interval = "prediction", level = 0.90)
-
-cat("Prediction for longevity at 800 gm brain size (Model 1):", pred1, "\n")
-cat("Prediction for longevity at log(800) gm brain size (Model 2):", pred2, "\n")
+pred1
 ```
+
+```{r}
+#Prediction for longevity at log(800) gm brain size (Model 2)
+# CI and PI for a brain size of log 800 gm
+pred2 <- predict(lm2, newdata = data.frame(Brain_Size_Species_Mean = log(800)), interval = "prediction", level = 0.90)
+
+pred2
+```
+
+### Looking at your two models, which do you think is better? Why?
 
 ### **Summary and Interpretation**
 
@@ -204,3 +236,57 @@ Interpretation:
 
 1.  Model 2 (log-log) generally provides better fit in cases with exponential-like growth or large variance.
 2.  The PI bands will reveal if 800g brain size is within the observed range; if it's extrapolating beyond the data, predictions are less trustworthy.
+
+```{r}
+# Prediction intervals for new data
+ci1 <- predict(m1, newdata = new_data, interval = "confidence", level = 0.90)
+pi1 <- predict(m1, newdata = new_data, interval = "prediction", level = 0.90)
+
+# Create plot
+g <- ggplot(data = d, aes(x = Brain_Size_Species_Mean, y = MaxLongevity_m)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x, color = "blue", se = FALSE) +
+  geom_line(data = cbind(new_data, ci1), aes(y = lwr), color = "blue", linetype = "dashed") +
+  geom_line(data = cbind(new_data, ci1), aes(y = upr), color = "blue", linetype = "dashed") +
+  geom_line(data = cbind(new_data, pi1), aes(y = lwr), color = "red", linetype = "dashed") +
+  geom_line(data = cbind(new_data, pi1), aes(y = upr), color = "red", linetype = "dashed") +
+  ggtitle("Regression with Confidence and Prediction Intervals") +
+  theme_minimal()
+
+print(g)
+
+# Step 4: Estimate longevity for a species with brain size = 800 gm
+estimate_800 <- predict(m1, newdata = data.frame(Brain_Size_Species_Mean = 800), 
+                        interval = "prediction", level = 0.90)
+cat("Estimated longevity for 800 gm brain size:", estimate_800, "\n")
+
+# Step 5: Comparing Models
+cat("\nModel 1 R-squared:", summary(m1)$r.squared)
+cat("\nModel 2 R-squared:", summary(m2)$r.squared)
+```
+
+### Results Interpretation
+
+✅ **Point Estimate of Slope (𝛽1):**
+
+-   **Model 1 (Original Data):** The slope is interpreted as the expected increase in longevity (in months) for every 1g increase in brain size.
+
+-   **Model 2 (Log-Transformed Data):** The slope is interpreted as the expected percent increase in longevity for a 1% increase in brain size.
+
+✅ **Hypothesis Test (H0: 𝛽1 = 0 vs. HA: 𝛽1 ≠ 0):**
+
+-   A small p-value in the regression summary would indicate strong evidence against the null hypothesis, supporting that there’s a significant relationship.
+
+✅ **90% Confidence Interval (CI):**
+
+-   The CI reflects the plausible range of slope values. If zero is **not** included, the relationship is significant.
+
+✅ **90% Prediction Interval (PI) for a Brain Size of 800g:**
+
+-   The PI provides a range where individual observations are expected to fall. If the interval is wide, predictions may be less reliable.
+
+✅ **Which Model is Better?**
+
+-   The **log-transformed model** is typically better if the data has heteroscedasticity (uneven spread of residuals) or if relationships are multiplicative rather than additive.
+
+-   The **R-squared** value will also help determine which model explains more variance in the response variable.
