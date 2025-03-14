@@ -157,9 +157,7 @@ summary(lm_log)
 
 plot_lm <- ggplot(kamilar_cooper, aes(x = Brain_Size_Species_Mean, y = MaxLongevity_m)) +
   geom_point() +
-  geom_smooth(method = "lm", se = TRUE, color = "blue") +
-  geom_text(x = 1500, y = 400, label = paste("y =", round(coef(lm1)[1], 2), "+", round(coef(lm1)[2], 4), "* x")) +
-  labs(title = "Longevity vs Brain Size", x = "Brain Size (g)", y = "Longevity (months)")
+  geom_smooth(method = "lm", se = TRUE, color = "blue") +  labs(title = "Longevity vs Brain Size", x = "Brain Size (g)", y = "Longevity (months)")
 
 # Display plot
 print(plot_lm)
@@ -169,9 +167,7 @@ print(plot_lm)
 # Scatterplot for Regression Model: log(longevity)~log(brain size)
 plot_lm_log <- ggplot(kamilar_cooper, aes(x = log(Brain_Size_Species_Mean), y = log(MaxLongevity_m))) +
   geom_point() +
-  geom_smooth(method = "lm", se = TRUE, color = "red") +
-  geom_text(x = 6, y = 6, label = paste("y =", round(coef(lm2)[1], 2), "+", round(coef(lm2)[2], 4), "* log(x)")) +
-  labs(title = "Log(Longevity) vs Log(Brain Size)", x = "log(Brain Size)", y = "log(Longevity)")
+  geom_smooth(method = "lm", se = TRUE, color = "red") +  labs(title = "Log(Longevity) vs Log(Brain Size)", x = "log(Brain Size)", y = "log(Longevity)")
 
 # Display plot
 print(plot_lm_log)
@@ -204,8 +200,39 @@ ci_lm_log
 ### Using your model, add lines for the 90 percent confidence and prediction interval bands on the plot and add a legend to differentiate between the lines.
 
 ```{r}
-# Step 3: Plot with CI and PI for Model 1
-new_data <- data.frame(Brain_Size_Species_Mean = seq(min(d$Brain_Size_Species_Mean), max(d$Brain_Size_Species_Mean), length.ou = 100))
+# CHALLENGE: confused about this part, for the 90th ci and perdiction interval... dont know if i sequenced it correctly
+kamilar_cooper_predict <- data.frame(Brain_Size_Species_Mean = seq(min(kamilar_cooper$Brain_Size_Species_Mean, na.rm = TRUE), max(kamilar_cooper$Brain_Size_Species_Mean, na.rm = TRUE), length.ou = 100))
+```
+
+```{r}
+# Prediction the confidence intervals for new data means based on the data above
+ci_predict <- predict(lm, newdata = kamilar_cooper_predict, interval = "confidence", level = 0.90)
+
+ci_predict
+
+```
+
+```{r}
+# Prediction the prediction intervals for new data means based on the data above
+pi_predict <- predict(lm, newdata = kamilar_cooper_predict, interval = "prediction", level = 0.90)
+
+pi_predict
+```
+
+```{r}
+# new prediction plot made based on the two plots above
+# the difference here is that the 90 percent ci and pi (represented by the red and blue lines) are added in along with the initial linear model line (green line)
+plot_predict <- ggplot(data = kamilar_cooper, aes(x = Brain_Size_Species_Mean, y = MaxLongevity_m)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x, color = "green", se = FALSE) +
+  geom_line(data = cbind(kamilar_cooper_predict, ci_predict), aes(y = lwr), color = "blue", linetype = "dashed") +
+  geom_line(data = cbind(kamilar_cooper_predict, ci_predict), aes(y = upr), color = "blue", linetype = "dashed") +
+  geom_line(data = cbind(kamilar_cooper_predict, pi_predict), aes(y = lwr), color = "red", linetype = "dotted") +
+  geom_line(data = cbind(kamilar_cooper_predict, pi_predict), aes(y = upr), color = "red", linetype = "dotted") +
+  ggtitle("Regression with Confidence and Prediction Intervals") +
+  theme_minimal()
+
+print(plot_predict)
 ```
 
 ### Produce a point estimate and associated 90 percent PI for the longevity of a species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
@@ -215,78 +242,21 @@ The `predict()` function allows us to generate predicted (i.e., ![](data:image/s
 ```{r}
 # CI and PI for a brain size of 800 gm
 #("Prediction for longevity at 800 gm brain size (Model 1)
-pred1 <- predict(lm1, newdata = data.frame(Brain_Size_Species_Mean = 800), interval = "prediction", level = 0.90)
+predict_lm <- predict(lm, newdata = data.frame(Brain_Size_Species_Mean = 800), interval = "prediction", level = 0.90)
 
-pred1
+predict_lm
 ```
 
 ```{r}
 #Prediction for longevity at log(800) gm brain size (Model 2)
 # CI and PI for a brain size of log 800 gm
-pred2 <- predict(lm2, newdata = data.frame(Brain_Size_Species_Mean = log(800)), interval = "prediction", level = 0.90)
+predict_log <- predict(lm_log, newdata = data.frame(Brain_Size_Species_Mean = log(800)), interval = "prediction", level = 0.90)
 
-pred2
+predict_log
 ```
 
 ### Looking at your two models, which do you think is better? Why?
 
 ### **Summary and Interpretation**
 
-Interpretation:
-
-1.  Model 2 (log-log) generally provides better fit in cases with exponential-like growth or large variance.
-2.  The PI bands will reveal if 800g brain size is within the observed range; if it's extrapolating beyond the data, predictions are less trustworthy.
-
-```{r}
-# Prediction intervals for new data
-ci1 <- predict(m1, newdata = new_data, interval = "confidence", level = 0.90)
-pi1 <- predict(m1, newdata = new_data, interval = "prediction", level = 0.90)
-
-# Create plot
-g <- ggplot(data = d, aes(x = Brain_Size_Species_Mean, y = MaxLongevity_m)) +
-  geom_point() +
-  geom_smooth(method = "lm", formula = y ~ x, color = "blue", se = FALSE) +
-  geom_line(data = cbind(new_data, ci1), aes(y = lwr), color = "blue", linetype = "dashed") +
-  geom_line(data = cbind(new_data, ci1), aes(y = upr), color = "blue", linetype = "dashed") +
-  geom_line(data = cbind(new_data, pi1), aes(y = lwr), color = "red", linetype = "dashed") +
-  geom_line(data = cbind(new_data, pi1), aes(y = upr), color = "red", linetype = "dashed") +
-  ggtitle("Regression with Confidence and Prediction Intervals") +
-  theme_minimal()
-
-print(g)
-
-# Step 4: Estimate longevity for a species with brain size = 800 gm
-estimate_800 <- predict(m1, newdata = data.frame(Brain_Size_Species_Mean = 800), 
-                        interval = "prediction", level = 0.90)
-cat("Estimated longevity for 800 gm brain size:", estimate_800, "\n")
-
-# Step 5: Comparing Models
-cat("\nModel 1 R-squared:", summary(m1)$r.squared)
-cat("\nModel 2 R-squared:", summary(m2)$r.squared)
-```
-
-### Results Interpretation
-
-✅ **Point Estimate of Slope (𝛽1):**
-
--   **Model 1 (Original Data):** The slope is interpreted as the expected increase in longevity (in months) for every 1g increase in brain size.
-
--   **Model 2 (Log-Transformed Data):** The slope is interpreted as the expected percent increase in longevity for a 1% increase in brain size.
-
-✅ **Hypothesis Test (H0: 𝛽1 = 0 vs. HA: 𝛽1 ≠ 0):**
-
--   A small p-value in the regression summary would indicate strong evidence against the null hypothesis, supporting that there’s a significant relationship.
-
-✅ **90% Confidence Interval (CI):**
-
--   The CI reflects the plausible range of slope values. If zero is **not** included, the relationship is significant.
-
-✅ **90% Prediction Interval (PI) for a Brain Size of 800g:**
-
--   The PI provides a range where individual observations are expected to fall. If the interval is wide, predictions may be less reliable.
-
-✅ **Which Model is Better?**
-
--   The **log-transformed model** is typically better if the data has heteroscedasticity (uneven spread of residuals) or if relationships are multiplicative rather than additive.
-
--   The **R-squared** value will also help determine which model explains more variance in the response variable.
+Interpretation: I think model 2 (log-log) generally provides better fit in this case with large variance. The data on figure 2 is more spread out evenly, compared to the not logged normal case, having more clumped and untrustworthy predictions.
