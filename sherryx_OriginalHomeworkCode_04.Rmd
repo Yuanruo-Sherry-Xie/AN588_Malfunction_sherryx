@@ -157,6 +157,7 @@ summary(lm_log)
 
 plot_lm <- ggplot(kamilar_cooper, aes(x = Brain_Size_Species_Mean, y = MaxLongevity_m)) +
   geom_point() +
+    geom_text(x = 1500, y = 400, label = paste("y =", round(coef(lm1)[1], 2), "+", round(coef(lm1)[2], 4), "* x")) +
   geom_smooth(method = "lm", se = TRUE, color = "blue") +  labs(title = "Longevity vs Brain Size", x = "Brain Size (g)", y = "Longevity (months)")
 
 # Display plot
@@ -167,6 +168,7 @@ print(plot_lm)
 # Scatterplot for Regression Model: log(longevity)~log(brain size)
 plot_lm_log <- ggplot(kamilar_cooper, aes(x = log(Brain_Size_Species_Mean), y = log(MaxLongevity_m))) +
   geom_point() +
+    geom_text(x = 6, y = 6, label = paste("y =", round(coef(lm2)[1], 2), "+", round(coef(lm2)[2], 4), "* log(x)")) +
   geom_smooth(method = "lm", se = TRUE, color = "red") +  labs(title = "Log(Longevity) vs Log(Brain Size)", x = "log(Brain Size)", y = "log(Longevity)")
 
 # Display plot
