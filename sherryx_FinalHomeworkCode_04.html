@@ -235,6 +235,8 @@ at your two models, which do you think is better? Why?</a></li>
 <li><a href="#summary-and-interpretation" id="toc-summary-and-interpretation"><strong>Summary and
 Interpretation</strong></a></li>
 </ul></li>
+<li><a href="#struggles-i-have-encountered-doing-hw-4" id="toc-struggles-i-have-encountered-doing-hw-4">5 Struggles I Have
+Encountered Doing HW 4</a></li>
 </ul>
 </div>
 </div>
@@ -904,6 +906,71 @@ fit in this case with large variance. The data on figure 2 is more
 spread out evenly, compared to the not logged normal case, having more
 clumped and untrustworthy predictions.</p>
 </div>
+</div>
+<div id="struggles-i-have-encountered-doing-hw-4" class="section level2">
+<h2>5 Struggles I Have Encountered Doing HW 4</h2>
+<ol style="list-style-type: decimal">
+<li><strong>Understanding the Rule of Thumb for Z.prop.test()</strong>
+While implementing the <code>Z.prop.test()</code> function, I
+encountered difficulty recalling the rule of thumb conditions for valid
+normal approximation in a proportion test — specifically the conditions
+that n×p&gt;5n p &gt; 5n×p&gt;5 and n×(1−p)&gt;5n (1 - p) &gt;
+5n×(1−p)&gt;5. These conditions are important for ensuring that the
+normal distribution can be appropriately applied to the data. Even
+though I successfully implemented the conditions by following the
+instructions, I felt unsure about their theoretical foundation. I
+realized I should have revisited the relevant module material or notes
+to better understand why these conditions are important. This experience
+taught me the importance of thoroughly reviewing foundational concepts
+rather than relying solely on instructions.</li>
+<li><strong>Structuring the Z.prop.test() Function Correctly.</strong>
+While designing the structure of my <code>Z.prop.test()</code> function,
+I struggled to determine the best way to organize my code for clarity
+and functionality. I knew I needed to split the logic between one-sample
+and two-sample tests, but I wasn’t sure how to proceed efficiently. I
+initially tried combining the logic for both scenarios in one code
+block, which became confusing and harder to debug. Eventually, I
+realized that separating the one-sample and two-sample conditions into
+distinct parts of the function improved readability and ensured the
+function performed correctly in both cases. This struggle highlighted
+the importance of structuring my code in a logical and organized manner
+to avoid confusion.</li>
+<li><strong>Difficulty Spotting Mistakes Without Peer Feedback.</strong>
+While implementing the confidence interval calculation for my
+<code>Z.prop.test()</code> function, I mistakenly used <code>p1</code>
+instead of <code>p0</code> in the formula. Despite carefully reviewing
+my code, I overlooked this error. Fortunately, my peer commentator
+noticed the mistake and pointed it out to me. This experience emphasized
+that I sometimes struggle to identify errors on my own, especially in
+complex calculations. It reminded me of the value of peer review and
+collaboration, and it reinforced the importance of stepping away from my
+work before reviewing it with fresh eyes — a strategy I’ll apply in
+future coding tasks.</li>
+<li><strong>Predicting Values and Constructing CI/PI in Regression
+Analysis.</strong> When adding 90% confidence and prediction intervals
+(CI and PI) to my regression plot, I struggled with the correct sequence
+of steps. Specifically, I wasn’t sure how to combine the predicted
+values with the CI and PI bands while ensuring they correctly aligned
+with the regression model. Although I eventually managed to construct
+the plot by combining the original data with the predicted values and
+corresponding intervals, I was uncertain whether I had done it
+correctly. This struggle highlighted that I need to develop a clearer
+understanding of how <code>predict()</code> outputs are structured and
+how to sequence those outputs effectively in <code>ggplot2</code>.</li>
+<li><strong>Predicting Longevity for a Brain Size of 800 gm.</strong>
+Predicting the longevity of a species with a brain size of 800 gm
+presented some confusion. I was unsure if I had structured my predict()
+function input correctly, especially when calculating the prediction
+interval (PI). The syntax for predict() requires defining the data frame
+structure carefully, and I initially questioned whether I needed to
+separate one-sample and two-sample conditions for this prediction step,
+similar to how I split those steps in my Z.prop.test() function.
+Eventually, I realized that the predict() function handles this
+automatically, provided the correct structure for the new data is
+specified. This challenge showed me that understanding how different
+functions operate — especially in terms of input formatting — is
+essential to producing accurate results.</li>
+</ol>
 </div>
 </section>
 
