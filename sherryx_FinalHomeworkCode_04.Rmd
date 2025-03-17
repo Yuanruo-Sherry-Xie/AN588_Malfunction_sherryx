@@ -1,8 +1,12 @@
 ---
-title: "sherryx_OriginalHomeworkCode_04"
+title: "sherryx_FinalHomeworkCode_04"
 author: "Sherry Xie"
 date: "2025-03-10"
-output: html_document
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+    toc: true
 ---
 
 //saadams// Adding a table of contents might be nice (especially since there are a few steps asked of us for this assignment)
@@ -17,11 +21,14 @@ knitr::opts_chunk$set(echo = TRUE)
 #loading ggplot for the figures
 library(ggplot2)
 library(tidyverse)
-library(dplyr)
-library(curl)
-```
 
-//saadams// If I'm not mistaken, I think it may be redundant to load dplyr and ggplot2 here because I'm pretty sure it's included in tidyverse!
+#loading prettydoc for the theme
+library(prettydoc)
+
+#NO NEED TO LOAD THESE BECAUSE "//saadams// If I'm not mistaken, I think it may be redundant to load dplyr and ggplot2 here because I'm pretty sure it's included in tidyverse!"
+#library(dplyr)
+#library(curl)
+```
 
 ## [1] Write a simple R function, `Z.prop.test()`, that can perform one- or two-sample Z-tests for proportion data, using the following guidelines:
 
